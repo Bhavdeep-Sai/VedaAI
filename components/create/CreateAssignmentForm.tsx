@@ -18,48 +18,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAssignmentStore } from '@/stores/assignment.store';
 import { useGenerationStore } from '@/stores/generation.store';
 import type { QuestionTypeConfig } from '@/types/assignment.types';
+import { Step1Schema, Step2Schema, Step3Schema } from '@/schemas/assignment.schema';
 
 // ─── Validation Schemas ────────────────────────────────────────────────────
-
-const Step1Schema = z.object({
-  title: z.string().min(1, 'Assignment title is required').max(200, 'Title too long'),
-  fileUrl: z.string().optional(),
-  fileName: z.string().optional(),
-  fileType: z.union([z.enum(['pdf', 'txt']), z.literal('')]).optional(),
-  fileSize: z.number().optional(),
-  fileContent: z.string().optional(),
-  wordCount: z.number().optional(),
-});
-
-const Step2Schema = z.object({
-  dueDate: z
-    .string()
-    .min(1, 'Due date is required')
-    .refine((val) => {
-      const date = new Date(val);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return !isNaN(date.getTime()) && date >= today;
-    }, 'Due date must be today or in the future'),
-  questionTypes: z
-    .array(
-      z.object({
-        type: z.string().min(1, 'Select a question type'),
-        count: z.number().int().min(1).max(100),
-        marksPerQuestion: z.number().int().min(1).max(100),
-      }),
-    )
-    .min(1, 'Add at least one question type'),
-  additionalInstructions: z.string().max(2000).default(''),
-});
-
-const Step3Schema = z.object({
-  schoolName: z.string().min(1, 'School name is required'),
-  className: z.string().min(1, 'Class is required'),
-  subject: z.string().min(1, 'Subject is required'),
-  timeAllowed: z.string().min(1, 'Time allowed is required (e.g. 2 hours)'),
-  headerLayout: z.enum(['layout-1', 'layout-2', 'layout-3']),
-});
 
 type Step1Data = z.infer<typeof Step1Schema>;
 type Step2Data = z.infer<typeof Step2Schema>;

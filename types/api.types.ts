@@ -27,8 +27,6 @@ export interface UploadResponse {
   fileName: string;
   fileType: 'pdf' | 'txt';
   fileSize: number;
-  extractedText: string;
-  wordCount: number;
 }
 
 // Generate response

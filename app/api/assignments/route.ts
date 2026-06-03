@@ -5,30 +5,7 @@ import { z } from 'zod';
 import type { ApiResponse } from '@/types/api.types';
 import type { IAssignment } from '@/models/Assignment';
 
-const CreateAssignmentSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
-  dueDate: z.string().min(1, 'Due date is required'),
-  fileUrl: z.string().default(''),
-  fileName: z.string().default(''),
-  fileType: z.union([z.enum(['pdf', 'txt']), z.literal('')]).default(''),
-  fileSize: z.number().default(0),
-  fileContent: z.string().default(''),
-  questionTypes: z
-    .array(
-      z.object({
-        type: z.string().min(1),
-        count: z.number().int().min(1).max(100),
-        marksPerQuestion: z.number().int().min(1).max(100),
-      }),
-    )
-    .min(1, 'At least one question type is required'),
-  additionalInstructions: z.string().max(2000).default(''),
-  schoolName: z.string().default(''),
-  className: z.string().default(''),
-  subject: z.string().default(''),
-  timeAllowed: z.string().default(''),
-  headerLayout: z.enum(['layout-1', 'layout-2', 'layout-3']).default('layout-1'),
-});
+import { CreateAssignmentSchema } from '@/schemas/assignment.schema';
 
 export async function GET(request: NextRequest) {
   try {

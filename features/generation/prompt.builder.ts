@@ -30,9 +30,14 @@ export function buildQuestionPaperPrompt(
     year: 'numeric',
   });
 
-  // Truncate file content to stay within token limits (~3000 words)
+  // Estimate tokens (roughly 4 chars per token)
+  const maxTokens = 6000;
+  const maxChars = maxTokens * 4;
+  
   const truncatedContent =
-    fileContent.length > 12000 ? fileContent.substring(0, 12000) + '\n...[content truncated]' : fileContent;
+    fileContent.length > maxChars 
+      ? fileContent.substring(0, maxChars) + '\n...[content truncated to fit token limits]' 
+      : fileContent;
 
   const additionalContext = assignment.additionalInstructions
     ? `\n\nAdditional Instructions from Teacher:\n${assignment.additionalInstructions}`

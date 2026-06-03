@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { toast } from 'sonner';
+import { apiClient } from '@/services/api.client';
 import type { Assignment, AssignmentFormData } from '@/types/assignment.types';
 
 interface AssignmentStore {
@@ -49,17 +50,7 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   fetchAssignments: async () => {
     set({ isLoading: true, error: null });
     try {
-      const query = get().searchQuery;
-      const url = query
-        ? `/api/assignments?q=${encodeURIComponent(query)}`
-        : '/api/assignments';
-
-      const res = await fetch(url);
-      const json = await res.json();
-
-      if (!json.success) throw new Error(json.error);
-
-      const data = json.data;
+      const data = await apiClient.assignments.list(get().searchQuery);
       if (Array.isArray(data)) {
         set({ assignments: data, total: data.length });
       } else {
@@ -77,15 +68,7 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   createAssignment: async (data) => {
     set({ isCreating: true, error: null });
     try {
-      const res = await fetch('/api/assignments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error);
-
-      const newAssignment: Assignment = json.data;
+      const newAssignment = await apiClient.assignments.create(data);
       set((state) => ({
         assignments: [newAssignment, ...state.assignments],
         total: state.total + 1,
@@ -105,10 +88,7 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   deleteAssignment: async (id) => {
     set({ isDeleting: id });
     try {
-      const res = await fetch(`/api/assignments/${id}`, { method: 'DELETE' });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error);
-
+      await apiClient.assignments.delete(id);
       set((state) => ({
         assignments: state.assignments.filter((a) => a._id !== id),
         total: Math.max(0, state.total - 1),

@@ -14,7 +14,7 @@ async function processGenerationJob(job: Job<GenerationJobData>): Promise<void> 
 
   const { getAssignmentWithContent } = await import('@/features/assignments/assignment.service');
   const { buildQuestionPaperPrompt } = await import('@/features/generation/prompt.builder');
-  const { groqProvider } = await import('@/features/ai/groq-provider');
+  const { aiProvider } = await import('@/features/ai/ai.factory');
   const { parseAIResponse } = await import('@/features/ai/response.parser');
   const { publishProgress, saveGeneratedPaper } = await import(
     '@/features/generation/generation.service'
@@ -45,19 +45,34 @@ async function processGenerationJob(job: Job<GenerationJobData>): Promise<void> 
 
   await assignmentRepository.updateStatus(assignmentId, 'processing');
 
-  // ── Stage 2: Build prompt ──────────────────────────────────────────────────
+  // ── Stage 2: Extract content & Build prompt ─────────────────────────────────
   await job.updateProgress(25);
   await publishProgress(assignmentId, {
     type: 'generation-progress',
     progress: 25,
-    message: 'Analyzing document content...',
+    message: 'Extracting and analyzing document content...',
   });
   await generationStatusRepository.updateStatus(job.id!, {
     progress: 25,
-    message: 'Analyzing document content...',
+    message: 'Extracting and analyzing document content...',
   });
 
-  const prompt = buildQuestionPaperPrompt(assignment, assignment.fileContent ?? '');
+  let fileContent = assignment.fileContent || '';
+  if (!fileContent && assignment.fileUrl) {
+    const { storageProvider } = await import('@/features/storage/local.provider');
+    const buffer = await storageProvider.getFileBuffer(assignment.fileUrl);
+    
+    if (assignment.fileType === 'pdf') {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pdfParse = require('pdf-parse');
+      const pdfData = await pdfParse(buffer);
+      fileContent = pdfData.text ?? '';
+    } else if (assignment.fileType === 'txt') {
+      fileContent = buffer.toString('utf-8');
+    }
+  }
+
+  const prompt = buildQuestionPaperPrompt(assignment, fileContent);
 
   // ── Stage 3: AI generation ─────────────────────────────────────────────────
   await job.updateProgress(45);
@@ -71,7 +86,7 @@ async function processGenerationJob(job: Job<GenerationJobData>): Promise<void> 
     message: 'Generating questions with AI...',
   });
 
-  const rawAIResponse = await groqProvider.generate(prompt);
+  const rawAIResponse = await aiProvider.generate(prompt);
 
   // ── Stage 4: Parse & validate ──────────────────────────────────────────────
   await job.updateProgress(75);

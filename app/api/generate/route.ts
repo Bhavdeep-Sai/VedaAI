@@ -3,9 +3,7 @@ import { enqueueGeneration } from '@/features/generation/generation.service';
 import { z } from 'zod';
 import type { ApiResponse, GenerateResponse } from '@/types/api.types';
 
-const GenerateSchema = z.object({
-  assignmentId: z.string().min(1, 'Assignment ID is required'),
-});
+import { GenerateSchema } from '@/schemas/generation.schema';
 
 export async function POST(request: NextRequest) {
   try {

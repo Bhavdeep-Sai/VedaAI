@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { apiClient } from '@/services/api.client';
 import type { GeneratedPaper, GenerationStatus, SSEEvent } from '@/types/paper.types';
 
 interface GenerationStore {
@@ -53,21 +54,15 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
       failureReason: null,
     });
 
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ assignmentId }),
-    });
-
-    const json = await res.json();
-    if (!json.success) {
-      set({ isGenerating: false, hasFailed: true, failureReason: json.error });
-      throw new Error(json.error);
+    try {
+      const { jobId } = await apiClient.generation.start(assignmentId);
+      set({ jobId });
+      return jobId;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to start generation';
+      set({ isGenerating: false, hasFailed: true, failureReason: message });
+      throw error;
     }
-
-    const { jobId } = json.data;
-    set({ jobId });
-    return jobId;
   },
 
   updateFromSSE: (event: SSEEvent) => {
@@ -92,12 +87,9 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
         });
         // Fetch the paper
         if (completedEvent.paperId) {
-          fetch(`/api/papers/${completedEvent.paperId}`)
-            .then((r) => r.json())
-            .then((json) => {
-              if (json.success) {
-                set({ paper: json.data });
-              }
+          apiClient.generation.getPaper(completedEvent.paperId)
+            .then((paper) => {
+              set({ paper });
             })
             .catch(console.error);
         }

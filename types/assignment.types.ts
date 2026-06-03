@@ -1,3 +1,6 @@
+import { z } from 'zod';
+import { CreateAssignmentSchema, QuestionTypeConfigSchema } from '@/schemas/assignment.schema';
+
 export type QuestionDifficulty = 'Easy' | 'Moderate' | 'Challenging';
 
 export type AssignmentStatus =
@@ -11,49 +14,16 @@ export type FileType = 'pdf' | 'txt' | '';
 
 export type HeaderLayout = 'layout-1' | 'layout-2' | 'layout-3';
 
-export interface QuestionTypeConfig {
-  type: string;
-  count: number;
-  marksPerQuestion: number;
-}
+export type QuestionTypeConfig = z.infer<typeof QuestionTypeConfigSchema>;
+export type CreateAssignmentPayload = z.infer<typeof CreateAssignmentSchema>;
 
-export interface Assignment {
+export interface Assignment extends CreateAssignmentPayload {
   _id: string;
-  title: string;
-  dueDate: string; // ISO string
-  fileUrl: string;
-  fileName: string;
-  fileType: FileType;
-  fileSize: number;
-  fileContent?: string; // extracted text, not always returned
-  questionTypes: QuestionTypeConfig[];
-  additionalInstructions: string;
-  schoolName: string;
-  className: string;
-  subject: string;
-  timeAllowed: string;
-  headerLayout: HeaderLayout;
   status: AssignmentStatus;
   totalQuestions: number;
   totalMarks: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface CreateAssignmentPayload {
-  title: string;
-  dueDate: string;
-  fileUrl: string;
-  fileName: string;
-  fileType: FileType;
-  fileSize: number;
-  questionTypes: QuestionTypeConfig[];
-  additionalInstructions: string;
-  schoolName: string;
-  className: string;
-  subject: string;
-  timeAllowed: string;
-  headerLayout: HeaderLayout;
 }
 
 export interface UpdateAssignmentStatusPayload {

@@ -43,7 +43,7 @@ export default function Home() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <a
-            href="https://github.com"
+            href="https://github.com/Bhavdeep-Sai/VedaAI"
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center h-14 px-8 rounded-full bg-white border border-[var(--border-default)] text-[var(--text-primary)] font-medium text-lg hover:bg-gray-50 transition-colors shadow-sm"
