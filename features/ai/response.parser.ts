@@ -22,24 +22,57 @@ export class ResponseParseError extends Error {
 }
 
 /**
- * Extract JSON from response (handles markdown code blocks)
+ * Extract JSON from response (handles markdown code blocks, think blocks, etc.)
  */
 function extractJSON(rawText: string): string {
-  // Remove markdown code block wrappers if present
-  const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) {
-    return jsonMatch[1].trim();
+  let text = rawText;
+
+  // 0. Strip <think>...</think> reasoning blocks emitted by deepseek-r1 and similar models
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+  // 1. Prefer an explicit ```json ... ``` wrapper
+  const jsonBlockMatch = text.match(/```json\s*([\s\S]*?)```/);
+  if (jsonBlockMatch) {
+    return jsonBlockMatch[1].trim();
   }
 
-  // Try to find raw JSON object/array
-  const jsonStart = rawText.indexOf('{');
-  const jsonEnd = rawText.lastIndexOf('}');
-  if (jsonStart !== -1 && jsonEnd !== -1) {
-    return rawText.substring(jsonStart, jsonEnd + 1);
+  // 2. Handle any generic ``` wrapper (e.g. the AI wrapped JSON in plain ``` blocks)
+  const genericBlockMatch = text.match(/^```[^\n]*\n([\s\S]*?)```\s*$/);
+  if (genericBlockMatch) {
+    const inner = genericBlockMatch[1].trim();
+    // Only return it if it looks like JSON, not a diagram
+    if (inner.startsWith('{') || inner.startsWith('[')) {
+      return inner;
+    }
   }
 
-  return rawText.trim();
+  // 3. Find outermost { ... } using brace-depth counting.
+  //    This correctly spans over embedded mermaid/code blocks inside JSON string values
+  //    without being fooled by ``` markers that appear *inside* string values.
+  const firstBrace = text.indexOf('{');
+  if (firstBrace !== -1) {
+    let depth = 0;
+    let inString = false;
+    let escape = false;
+    for (let i = firstBrace; i < text.length; i++) {
+      const ch = text[i];
+      if (escape) { escape = false; continue; }
+      if (ch === '\\' && inString) { escape = true; continue; }
+      if (ch === '"') { inString = !inString; continue; }
+      if (inString) continue; // skip everything inside string literals
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) {
+          return text.substring(firstBrace, i + 1);
+        }
+      }
+    }
+  }
+
+  return text.trim();
 }
+
 
 /**
  * Parse and validate the raw AI response text into a structured GeneratedPaper.

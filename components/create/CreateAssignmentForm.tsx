@@ -435,30 +435,30 @@ export function CreateAssignmentForm() {
                     {layoutNum === 1 && (
                       <div className="flex flex-col gap-0.5 text-[10px] text-[var(--text-secondary)]">
                         <div className="flex justify-between">
-                          <span>{step3.watch('subject') || 'Subject'}</span>
-                          <span>{step3.watch('className') || 'Class'}</span>
-                          <span>{step3.watch('timeAllowed') || 'Time'}</span>
+                          <span>Subject: {step3.watch('subject') || 'Subject'}</span>
+                          <span>Class: {step3.watch('className') || 'Class'}</span>
+                          <span>Time Allowed: {step3.watch('timeAllowed') || 'Time'}</span>
                         </div>
                         <div className="flex justify-end">
-                          <span>Max Marks: {totalMarks}</span>
+                          <span>Maximum Marks: {totalMarks}</span>
                         </div>
                       </div>
                     )}
                     {layoutNum === 2 && (
                       <div className="text-center text-[10px] text-[var(--text-secondary)]">
-                        <div>{step3.watch('subject') || 'Subject'} - {step3.watch('className') || 'Class'}</div>
-                        <div className="mt-0.5">Time: {step3.watch('timeAllowed') || 'Time'} | Max Marks: {totalMarks}</div>
+                        <div>{step3.watch('subject') || 'Subject'} - Class {step3.watch('className') || 'Class'}</div>
+                        <div className="mt-0.5">Time Allowed: {step3.watch('timeAllowed') || 'Time'} | Maximum Marks: {totalMarks}</div>
                       </div>
                     )}
                     {layoutNum === 3 && (
                       <div className="flex flex-col gap-0.5 text-[10px] text-[var(--text-secondary)]">
                         <div className="flex justify-between">
                           <span>Class: {step3.watch('className') || 'Class'}</span>
-                          <span>Time: {step3.watch('timeAllowed') || 'Time'}</span>
+                          <span>Time Allowed: {step3.watch('timeAllowed') || 'Time'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Subject: {step3.watch('subject') || 'Subject'}</span>
-                          <span>Max Marks: {totalMarks}</span>
+                          <span>Maximum Marks: {totalMarks}</span>
                         </div>
                       </div>
                     )}

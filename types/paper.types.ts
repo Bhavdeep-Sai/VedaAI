@@ -1,5 +1,11 @@
 import type { QuestionDifficulty } from './assignment.types';
 
+export interface ChartData {
+  type: 'bar' | 'pie' | 'line' | 'histogram';
+  headers: string[]; // e.g. ["Category", "Value"]
+  rows: string[][];  // e.g. [["Category A", "10"], ["Category B", "20"]]
+}
+
 export interface PaperQuestion {
   number: number;
   text: string;
@@ -7,6 +13,7 @@ export interface PaperQuestion {
   marks: number;
   answer: string;
   subParts: string[]; // always an array, empty by default
+  chartData?: ChartData; // For globally plotting any kind of chart
 }
 
 export interface PaperSection {

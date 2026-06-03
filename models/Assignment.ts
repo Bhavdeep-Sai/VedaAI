@@ -137,11 +137,11 @@ AssignmentSchema.index({ createdAt: -1 });
 AssignmentSchema.index({ dueDate: 1 });
 
 // Auto-calculate totals before save
-AssignmentSchema.pre('save', async function (this: any) {
+AssignmentSchema.pre('save', async function (this: mongoose.Document & IAssignment) {
   if (this.questionTypes && this.questionTypes.length > 0) {
-    this.totalQuestions = this.questionTypes.reduce((sum: number, qt: any) => sum + qt.count, 0);
+    this.totalQuestions = this.questionTypes.reduce((sum: number, qt: {count: number}) => sum + qt.count, 0);
     this.totalMarks = this.questionTypes.reduce(
-      (sum: number, qt: any) => sum + qt.count * qt.marksPerQuestion,
+      (sum: number, qt: {count: number, marksPerQuestion: number}) => sum + qt.count * qt.marksPerQuestion,
       0,
     );
   }

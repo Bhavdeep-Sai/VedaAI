@@ -26,6 +26,12 @@ export async function enqueueGeneration(assignmentId: string): Promise<EnqueueRe
     throw new Error('Generation is already in progress for this assignment');
   }
 
+  // ── Clear stale cached status from previous generation ──────────────────
+  // This prevents the SSE route from immediately replaying the old
+  // 'generation-completed' event to a new connection (causes instant skip).
+  const redis = getRedisClient();
+  await redis.del(`gen:status:${assignmentId}`);
+
   const queue = getGenerationQueue();
   const job = await queue.add(
     'generate-paper',

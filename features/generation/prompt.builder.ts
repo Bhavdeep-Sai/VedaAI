@@ -74,11 +74,11 @@ For each section, distribute difficulty as follows:
 3. Questions must be age-appropriate and pedagogically sound
 4. Provide a complete, accurate answer for each question
 5. For Multiple Choice Questions, include 4 options (A, B, C, D) in the question text
-6. For diagram/graph questions, describe the diagram conceptually
 7. Include the provided school name, class, subject, and time allowance in the header metadata exactly as provided.
+8. For any question that requires the student to interpret a graph, chart, or data table (like distance-time graphs, pie charts, histograms, bar graphs, etc.), you MUST include a "chartData" object. The "chartData" object must have "type" ("bar", "pie", "line", or "histogram"), "headers" (array of 2 strings), and "rows" (array of 2-item string arrays containing the data points to plot). Do NOT put comma-separated data points in the question text.
 
-## Response Format
-Respond ONLY with a valid JSON object matching this exact schema (no markdown, no explanation):
+## CRITICAL: Response Format
+Your ENTIRE response must be ONE valid JSON object. Nothing before the opening brace. Nothing after the closing brace. No markdown, no code fences, no explanation — just raw JSON.
 
 {
   "metadata": {
@@ -96,11 +96,16 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown, n
       "questions": [
         {
           "number": 1,
-          "text": "<complete question text>",
+          "text": "<full question text here>",
           "difficulty": "Easy",
           "marks": ${assignment.questionTypes[0]?.marksPerQuestion ?? 1},
           "answer": "<complete model answer>",
-          "subParts": []
+          "subParts": [],
+          "chartData": {
+            "type": "bar",
+            "headers": ["Category", "Value"],
+            "rows": [["A", "10"], ["B", "20"]]
+          }
         }
       ],
       "totalMarks": ${(assignment.questionTypes[0]?.count ?? 0) * (assignment.questionTypes[0]?.marksPerQuestion ?? 1)}

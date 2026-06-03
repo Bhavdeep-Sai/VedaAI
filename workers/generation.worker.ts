@@ -87,6 +87,8 @@ async function processGenerationJob(job: Job<GenerationJobData>): Promise<void> 
   });
 
   const rawAIResponse = await aiProvider.generate(prompt);
+  console.log(`[Worker] Raw AI response (first 500 chars): ${rawAIResponse.substring(0, 500)}`);
+
 
   // ── Stage 4: Parse & validate ──────────────────────────────────────────────
   await job.updateProgress(75);
@@ -184,11 +186,11 @@ export function startWorker(): Worker {
     await handleJobFailure(job, error);
   });
 
-  worker.on('error', (error: any) => {
+  worker.on('error', (error: Error & { code?: string, errors?: Array<{code: string}> }) => {
     if (
       error.code === 'ECONNREFUSED' ||
       error.message.includes('ECONNREFUSED') ||
-      (error.errors && error.errors.some((e: any) => e.code === 'ECONNREFUSED'))
+      (error.errors && error.errors.some((e) => e.code === 'ECONNREFUSED'))
     ) {
       return; // Suppress massive connection retry spam if Redis is not running
     }

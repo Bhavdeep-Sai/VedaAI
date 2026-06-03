@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Search, Filter, Check } from 'lucide-react';
 import { AssignmentCard } from './AssignmentCard';
 import { EmptyState } from './EmptyState';
@@ -115,12 +116,12 @@ export function AssignmentGrid() {
       )}
 
       {/* Mobile Floating Action Button */}
-      <a 
+      <Link 
         href="/assignments/create"
         className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-100 z-40 text-brand"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-      </a>
+      </Link>
       </div>
     </div>
   );

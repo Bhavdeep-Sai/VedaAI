@@ -52,6 +52,8 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
       hasCompleted: false,
       hasFailed: false,
       failureReason: null,
+      paper: null,        // ← clear stale paper so it never bleeds into a fresh generation
+      jobId: null,
     });
 
     try {

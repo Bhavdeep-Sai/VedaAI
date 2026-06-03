@@ -27,6 +27,7 @@ export function SectionBlock({ section, showAnswers = false }: SectionBlockProps
             key={question.number}
             question={question}
             showAnswer={showAnswers}
+            sectionType={section.type}
           />
         ))}
       </div>

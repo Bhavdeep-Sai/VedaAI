@@ -24,12 +24,13 @@ interface GeneratedPaperPageProps {
 
 export function GeneratedPaperPage({ assignment, paper: initialPaper, assignmentId }: GeneratedPaperPageProps) {
   const router = useRouter();
-  const { startGeneration, isGenerating, hasCompleted, paper: generatedPaper } = useGenerationStore();
+  const { startGeneration, isGenerating, hasCompleted, paper: generatedPaper, reset } = useGenerationStore();
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showGenerationUI, setShowGenerationUI] = useState(false);
 
-  // Use newly generated paper or initial server-provided paper
-  const activePaper = generatedPaper ?? initialPaper;
+  // Only use generatedPaper when NOT regenerating (to prevent stale paper bleed-through)
+  // During regeneration, the store paper is null (cleared by startGeneration)
+  const activePaper = showGenerationUI ? null : (generatedPaper ?? initialPaper);
   const paperRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
@@ -50,12 +51,17 @@ export function GeneratedPaperPage({ assignment, paper: initialPaper, assignment
   };
 
   const handleViewPaper = () => {
+    // Reset store so the page fetches fresh data from the server
+    reset();
+    setIsRegenerating(false);
     setShowGenerationUI(false);
+    // Hard navigate to reload the server component with the new paper
+    router.push(`/generated-paper/${assignmentId}`);
     router.refresh();
   };
 
-  // Still generating — show progress
-  if (showGenerationUI && !hasCompleted) {
+  // Still generating or has finished but user hasn't seen success state yet
+  if (showGenerationUI) {
     return (
       <div className="max-w-2xl mx-auto">
         <GenerationProgress
@@ -139,7 +145,7 @@ export function GeneratedPaperPage({ assignment, paper: initialPaper, assignment
       </div>
 
       {/* ── Paper Viewer ─────────────────────────────────────── */}
-      <div ref={paperRef} className="flex-1 w-full bg-white md:bg-transparent">
+      <div ref={paperRef} className="flex-1 w-full bg-white md:bg-transparent mt-4 md:mt-8">
         {activePaper && <PaperViewer paper={activePaper} headerLayout={assignment.headerLayout} />}
       </div>
     </div>

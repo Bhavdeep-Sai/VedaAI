@@ -30,8 +30,15 @@ function createRedisClient(name: string): Redis {
   });
 
   client.on('connect', () => console.log(`[Redis:${name}] Connected`));
-  client.on('error', (err: any) => {
-    if (err.code === 'ECONNREFUSED' || err.message?.includes('ECONNREFUSED')) return;
+  client.on('error', (err: Error & { code?: string, errors?: Array<{code: string}> }) => {
+    if (
+      err.code === 'ECONNREFUSED' ||
+      err.message.includes('ECONNREFUSED') ||
+      (err.errors && err.errors.some((e) => e.code === 'ECONNREFUSED'))
+    ) {
+      // Suppress massive connection retry spam
+      return;
+    }
     console.error(`[Redis:${name}] Error:`, err);
   });
   client.on('reconnecting', () => {

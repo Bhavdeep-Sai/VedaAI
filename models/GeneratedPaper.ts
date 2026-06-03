@@ -8,6 +8,11 @@ export interface IPaperQuestion {
   marks: number;
   answer: string;
   subParts: string[];
+  chartData?: {
+    type: 'bar' | 'pie' | 'line' | 'histogram';
+    headers: string[];
+    rows: string[][];
+  };
 }
 
 export interface IPaperSection {
@@ -60,6 +65,14 @@ const PaperQuestionSchema = new Schema<IPaperQuestion>(
     marks: { type: Number, required: true, min: 1 },
     answer: { type: String, required: true },
     subParts: { type: [String], default: [] },
+    chartData: {
+      type: new Schema({
+        type: { type: String, enum: ['bar', 'pie', 'line', 'histogram'], required: true },
+        headers: { type: [String], required: true },
+        rows: { type: [[String]], required: true },
+      }, { _id: false }),
+      required: false
+    },
   },
   { _id: false },
 );
@@ -110,8 +123,11 @@ const GeneratedPaperSchema = new Schema<IGeneratedPaper>(
 GeneratedPaperSchema.index({ assignmentId: 1, version: -1 });
 GeneratedPaperSchema.index({ generatedAt: -1 });
 
+if (mongoose.models.GeneratedPaper) {
+  delete mongoose.models.GeneratedPaper;
+}
+
 const GeneratedPaper: Model<IGeneratedPaper> =
-  mongoose.models.GeneratedPaper ??
   mongoose.model<IGeneratedPaper>('GeneratedPaper', GeneratedPaperSchema);
 
 export default GeneratedPaper;
