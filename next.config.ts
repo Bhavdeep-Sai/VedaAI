@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
     return config;
   },
 
+  // Silence Turbopack warning during Vercel build
+  turbopack: {},
+
   // Increase server action body size for file uploads
   serverExternalPackages: [
     'mongoose',

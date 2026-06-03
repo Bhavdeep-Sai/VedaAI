@@ -143,12 +143,12 @@ export function CreateAssignmentForm() {
         fileSize: fileData.fileSize || 0,
         fileContent: fileData.fileContent || '',
         questionTypes: step2Data.questionTypes,
-        additionalInstructions: step2Data.additionalInstructions,
+        additionalInstructions: step2Data.additionalInstructions || '',
         schoolName: data.schoolName,
         className: data.className,
         subject: data.subject,
         timeAllowed: data.timeAllowed,
-        headerLayout: data.headerLayout,
+        headerLayout: data.headerLayout || 'layout-1',
       });
 
       setAssignmentId(id);

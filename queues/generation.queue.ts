@@ -9,7 +9,8 @@ let queue: Queue | null = null;
 export function getGenerationQueue(): Queue {
   if (!queue) {
     queue = new Queue(QUEUE_NAME, {
-      connection: createFreshRedisConnection(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      connection: createFreshRedisConnection() as any,
       defaultJobOptions: {
         attempts: 3,
         backoff: {

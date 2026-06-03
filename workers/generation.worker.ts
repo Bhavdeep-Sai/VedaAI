@@ -167,7 +167,8 @@ export function startWorker(): Worker {
   }
 
   worker = new Worker<GenerationJobData>(QUEUE_NAME, processGenerationJob, {
-    connection: createFreshRedisConnection(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    connection: createFreshRedisConnection() as any,
     concurrency: 2,
     limiter: {
       max: 5,

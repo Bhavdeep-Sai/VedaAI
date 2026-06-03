@@ -35,7 +35,7 @@ export const Step2Schema = z.object({
       }),
     )
     .min(1, 'Add at least one question type'),
-  additionalInstructions: z.string().max(2000).default(''),
+  additionalInstructions: z.string().max(2000).optional(),
 });
 
 export const Step3Schema = z.object({
@@ -43,7 +43,7 @@ export const Step3Schema = z.object({
   className: z.string().min(1, 'Class is required'),
   subject: z.string().min(1, 'Subject is required'),
   timeAllowed: z.string().min(1, 'Time allowed is required (e.g. 2 hours)'),
-  headerLayout: z.enum(['layout-1', 'layout-2', 'layout-3']).default('layout-1'),
+  headerLayout: z.enum(['layout-1', 'layout-2', 'layout-3']).optional(),
 });
 
 export const CreateAssignmentSchema = z.object({
