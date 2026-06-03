@@ -223,124 +223,96 @@ export function CreateAssignmentForm() {
     );
   };
 
-  // Navigate to paper on completion
-  const handleViewPaper = () => {
+  const handleViewPaper = useCallback(() => {
     if (assignmentId) {
-      router.push(`/generated-paper/${assignmentId}`);
+      router.push(`/assignments/${assignmentId}`);
     }
-  };
+  }, [assignmentId, router]);
 
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <>
+      <div className="max-w-3xl w-full mx-auto h-full flex flex-col overflow-x-hidden">
       {/* ── Step Indicator ────────────────────────────────────── */}
-      <div className="mb-6">
+      <div className="flex-shrink-0 mb-4 md:mb-6 pt-4 px-2 sm:px-4 md:px-0 w-full">
         <StepIndicator totalSteps={4} currentStep={step} />
       </div>
 
-      {/* ── Page Title ───────────────────────────────────────── */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 rounded-full bg-[var(--success)]" />
-          <h2 className="text-base font-semibold text-[var(--text-primary)]">
-            {step === 1 && 'Create Assignment'}
-            {step === 2 && 'Assignment Details'}
-            {step === 3 && 'Header & Layout'}
-            {step === 4 && 'Generating Question Paper'}
-          </h2>
-        </div>
-        <p className="text-sm text-[var(--text-secondary)] ml-4">
-          {step === 1 && 'Upload your study material'}
-          {step === 2 && 'Set up a new assignment for your students'}
-          {step === 3 && 'Configure the question paper header and layout'}
-          {step === 4 && 'Please wait while AI generates your question paper'}
-        </p>
-      </div>
-
-      {/* ── STEP 1: Title + Upload ────────────────────────────── */}
-      {step === 1 && (
-        <div className="card p-6 space-y-5 animate-fade-in">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 sm:px-4 md:px-6 lg:px-8 pb-6 md:pb-8 flex flex-col w-full">
+        <div className="my-auto space-y-4 md:space-y-6 w-full">
+          {/* ── Page Title ───────────────────────────────────────── */}
           <div>
-            <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-0.5">
-              Assignment Details
-            </h3>
-            <p className="text-xs text-[var(--text-secondary)]">
-              Basic information about your assignment
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-2 h-2 rounded-full bg-[var(--success)]" />
+              <h2 className="text-base font-semibold text-[var(--text-primary)]">
+                {step === 1 && 'Create Assignment'}
+                {step === 2 && 'Assignment Details'}
+                {step === 3 && 'Header & Layout'}
+                {step === 4 && 'Generating Question Paper'}
+              </h2>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {step === 1 && 'Upload your study material'}
+              {step === 2 && 'Set up a new assignment for your students'}
+              {step === 3 && 'Configure the question paper header and layout'}
+              {step === 4 && 'Please wait while AI generates your question paper'}
             </p>
           </div>
 
-          {/* Title Field */}
-          <div className="space-y-1.5">
-            <Label htmlFor="title" required>Assignment Title</Label>
-            <Input
-              id="title"
-              placeholder="e.g. Quiz on Electricity"
-              {...step1.register('title')}
-              error={step1.formState.errors.title?.message}
-            />
-          </div>
+          {/* ── STEP 1: Title + Upload ────────────────────────────── */}
+        {step === 1 && (
+          <div className="card p-4 sm:p-5 md:p-6 space-y-4 md:space-y-5 animate-fade-in">
+            <div className="space-y-1.5">
+              <Label htmlFor="title" required>Assignment Title</Label>
+              <Input
+                id="title"
+                placeholder="e.g. Quiz on Electricity"
+                {...step1.register('title')}
+                error={step1.formState.errors.title?.message}
+              />
+            </div>
 
-          {/* File Upload */}
-          <div className="space-y-2">
-            <FileUploadZone
-              onUploadSuccess={handleFileUpload}
-              currentFile={
-                step1.watch('fileUrl')
-                  ? {
-                      name: step1.watch('fileName') || '',
-                      size: step1.watch('fileSize') || 0,
-                      type: step1.watch('fileType') || '',
-                    }
-                  : null
-              }
-              onClear={handleFileClear}
-            />
-            {step1.formState.errors.fileUrl && (
-              <p className="text-xs text-[var(--danger)]">
-                {step1.formState.errors.fileUrl.message}
+            <div className="space-y-2">
+              <FileUploadZone
+                onUploadSuccess={handleFileUpload}
+                currentFile={
+                  step1.watch('fileUrl')
+                    ? {
+                        name: step1.watch('fileName') || '',
+                        size: step1.watch('fileSize') || 0,
+                        type: step1.watch('fileType') || '',
+                      }
+                    : null
+                }
+                onClear={handleFileClear}
+              />
+              {step1.formState.errors.fileUrl && (
+                <p className="text-xs text-[var(--danger)]">
+                  {step1.formState.errors.fileUrl.message}
+                </p>
+              )}
+            </div>
+
+            {(step1.watch('wordCount') || 0) > 0 && (
+              <p className="text-xs text-[var(--text-muted)]">
+                ✓ Extracted {(step1.watch('wordCount') || 0).toLocaleString()} words from document
               </p>
             )}
+
+            <div className="flex justify-center md:justify-end pt-6">
+              <Button type="button" variant="dark-pill" size="md" onClick={handleStep1Next} className="gap-2 px-8">
+                Next <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
+        )}
 
-          {(step1.watch('wordCount') || 0) > 0 && (
-            <p className="text-xs text-[var(--text-muted)]">
-              ✓ Extracted {(step1.watch('wordCount') || 0).toLocaleString()} words from document
-            </p>
-          )}
-
-          {/* Footer */}
-          <div className="flex justify-end pt-2">
-            <Button
-              type="button"
-              variant="dark-pill"
-              size="md"
-              onClick={handleStep1Next}
-              className="gap-2 px-8"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* ── STEP 2: Assignment Configuration ─────────────────── */}
-      {step === 2 && (
-        <div className="card p-6 space-y-5 animate-fade-in">
-          <div>
-            <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-0.5">
-              Assignment Details
-            </h3>
-            <p className="text-xs text-[var(--text-secondary)]">
-              Basic information about your assignment
-            </p>
-          </div>
-
-          {/* Due Date */}
-          <div className="space-y-1.5">
-            <Label htmlFor="dueDate" required>Due Date</Label>
-            <div className="relative">
+        {/* ── STEP 2: Assignment Configuration ─────────────────── */}
+        {step === 2 && (
+          <div className="card p-4 sm:p-6 space-y-4 sm:space-y-5 animate-fade-in">
+            <div className="space-y-1.5">
+              <Label htmlFor="dueDate" required>Due Date</Label>
               <Input
                 id="dueDate"
                 type="date"
@@ -350,7 +322,6 @@ export function CreateAssignmentForm() {
                 className="[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
               />
             </div>
-          </div>
 
           {/* Question Types */}
           <div className="space-y-3">
@@ -428,13 +399,13 @@ export function CreateAssignmentForm() {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between items-center pt-2">
+          <div className="flex justify-center md:justify-between items-center gap-4 pt-6 md:pt-2 pb-6 md:pb-0">
             <Button
               type="button"
               variant="ghost"
               size="md"
               onClick={() => setStep(1)}
-              className="gap-2 rounded-full border border-[var(--border-default)]"
+              className="gap-2 rounded-full bg-white md:bg-transparent border border-[var(--border-default)] shadow-sm md:shadow-none"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -456,7 +427,7 @@ export function CreateAssignmentForm() {
 
       {/* ── STEP 3: Header Details & Layout ─────────────────── */}
       {step === 3 && (
-        <div className="card p-6 space-y-6 animate-fade-in">
+        <div className="card p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
           <div>
             <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-0.5">
               Header Details
@@ -466,7 +437,7 @@ export function CreateAssignmentForm() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="schoolName" required>School Name</Label>
               <Input id="schoolName" placeholder="e.g. Delhi Public School" {...step3.register('schoolName')} error={step3.formState.errors.schoolName?.message} />
@@ -487,7 +458,7 @@ export function CreateAssignmentForm() {
 
           <div className="space-y-3 pt-2">
             <Label required>Header Layout Preview</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {[1, 2, 3].map((layoutNum) => {
                 const layoutKey = `layout-${layoutNum}` as "layout-1" | "layout-2" | "layout-3";
                 const isSelected = step3.watch('headerLayout') === layoutKey;
@@ -536,8 +507,8 @@ export function CreateAssignmentForm() {
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-2">
-            <Button type="button" variant="ghost" size="md" onClick={() => setStep(2)} className="gap-2 rounded-full border border-[var(--border-default)]">
+          <div className="flex justify-center md:justify-between items-center gap-4 pt-6 md:pt-2 pb-6 md:pb-0">
+            <Button type="button" variant="ghost" size="md" onClick={() => setStep(2)} className="gap-2 rounded-full bg-white md:bg-transparent border border-[var(--border-default)] shadow-sm md:shadow-none">
               <ChevronLeft className="w-4 h-4" />
               Previous
             </Button>
@@ -559,6 +530,9 @@ export function CreateAssignmentForm() {
           }}
         />
       )}
+        </div>
+      </div>
     </div>
+    </>
   );
 }

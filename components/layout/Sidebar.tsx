@@ -34,7 +34,7 @@ export function Sidebar() {
   const { total } = useAssignmentStore();
 
   return (
-    <aside className="sidebar print:hidden">
+    <aside className="sidebar hidden md:flex print:hidden">
       {/* ── Logo ──────────────────────────────────────────────── */}
       <nav className="z-10 w-full max-w-9xl mx-auto px-6 py-6 flex items-center ">
         <Link href="/" className="flex items-center">

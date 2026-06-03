@@ -1,4 +1,7 @@
 import { Sidebar } from '@/components/layout/Sidebar';
+import { MobileHeader } from '@/components/layout/MobileHeader';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { MainContent } from '@/components/layout/MainContent';
 
 export default function DashboardLayout({
   children,
@@ -7,10 +10,12 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="dashboard-layout print:block">
+      <MobileHeader />
       <Sidebar />
-      <div className="main-content print:block print:ml-0">
+      <MainContent>
         {children}
-      </div>
+      </MainContent>
+      <MobileBottomNav />
     </div>
   );
 }

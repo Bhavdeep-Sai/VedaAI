@@ -239,6 +239,39 @@ body {
   flex-direction: column;
 }
 
+@media (max-width: 768px) {
+  body {
+    overflow: hidden;
+    height: 100dvh;
+  }
+  .dashboard-layout {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+  }
+  .main-content {
+    margin-left: 0;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+  }
+  .page-body {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .page-header {
+    background: transparent !important;
+  }
+  .sidebar {
+    display: none !important;
+  }
+}
+
 .page-header {
   height: var(--header-height);
   background: var(--bg-sidebar);
@@ -522,10 +555,17 @@ body {
   background: white;
   max-width: 800px;
   margin: 0 auto;
-  padding: 48px;
-  border-radius: var(--radius-lg);
+  padding: 16px;
+  border-radius: 0;
   box-shadow: var(--shadow-card);
   font-family: "Times New Roman", Times, serif;
+}
+
+@media (min-width: 768px) {
+  .paper-container {
+    padding: 48px;
+    border-radius: var(--radius-lg);
+  }
 }
 
 .paper-school-name {

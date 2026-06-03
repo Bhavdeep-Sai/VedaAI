@@ -34,28 +34,27 @@ export function Header({
   };
 
   return (
-    <header className="page-header print:hidden">
+    <header className="page-header print:hidden md:bg-[var(--bg-sidebar)] bg-transparent border-none md:border-solid md:border-b z-40">
       {/* ── Left: Back + Title ───────────────────────────────── */}
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-center gap-3 flex-1 min-w-0 md:pl-0 pl-2 justify-center md:justify-start relative">
         {showBack && (
           <button
             onClick={handleBack}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[var(--bg-main)] transition-colors text-[var(--text-secondary)] flex-shrink-0"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-white md:bg-transparent shadow-sm md:shadow-none hover:bg-[var(--bg-main)] transition-colors text-[var(--text-secondary)] flex-shrink-0 absolute left-2 md:static z-10"
             aria-label="Go back"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5 text-black" />
           </button>
         )}
 
         {title && (
-          <div className="flex items-center gap-2 min-w-0">
-            <LayoutGrid className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
-            <div className="min-w-0">
-              <h1 className="text-sm font-medium text-[var(--text-primary)] truncate">
+          <div className="flex items-center gap-2 min-w-0 w-full">
+            <div className="min-w-0 flex flex-col md:flex-row items-center justify-center w-full md:gap-2 px-12 md:px-0 text-center">
+              <h1 className="text-base md:text-sm font-semibold md:font-medium text-[var(--text-primary)] truncate w-full">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-xs text-[var(--text-muted)] truncate">{subtitle}</p>
+                <p className="text-[10px] md:text-xs text-[var(--text-muted)] truncate w-full">{subtitle}</p>
               )}
             </div>
           </div>
@@ -63,7 +62,7 @@ export function Header({
       </div>
 
       {/* ── Right: Actions + User ────────────────────────────── */}
-      <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+      <div className="hidden md:flex items-center gap-3 ml-4 flex-shrink-0">
         {actions}
 
         {/* Notification Bell */}
